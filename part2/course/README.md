@@ -1,0 +1,1 @@
+# The course info appplication
