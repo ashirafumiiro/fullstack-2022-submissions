@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons';
 
 const Filter = ({filter, filterChange})=>{
   return (
@@ -23,14 +23,15 @@ const PersonForm = (props)=>{
   )
 }
 
-const Person = ({name, number}) => <div>{name} {number}</div>
+const Person = ({id, name, number, handleDelete}) => <div>{name} {number} <button onClick={() => handleDelete(id)}>delete</button></div>
 
 
-const Persons = ({persons, filter})=>{
+const Persons = ({persons, filter, handleDelete})=>{
   return (
     <div>
       {persons.filter(p=>p.name.toLowerCase().includes(filter.toLocaleLowerCase()))
-        .map(person=><Person key={person.id} name={person.name} number={person.number}/>)}
+        .map(person=><Person key={person.id} name={person.name} number={person.number} id={person.id} handleDelete={handleDelete}/>)}
+        
     </div>
   )
 
@@ -43,11 +44,11 @@ const App = () => {
   const [ filter, setFilter ] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('retrieved data:', response.data)
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(returnedPersons => {
+        console.log('retrieved data:', returnedPersons)
+        setPersons(returnedPersons)
       })
   }, [])
   
@@ -62,12 +63,35 @@ const App = () => {
   const addPerson = (event) =>{
     event.preventDefault();
     let newPerson = {name: newName, number: phoneNumber}
-    if(persons.findIndex(p=>p.name === newName) > -1)
-      alert(`${newName} is already added to phonebook`);
+    if(persons.findIndex(p=>p.name.toLocaleLowerCase() === newName.toLocaleLowerCase()) > -1){
+      if (window.confirm(`${newName} is already added to phonebook. replace the old number with a new one?`)) {
+        var personToUpdate = persons.find(p => p.name.toLocaleLowerCase() === newName.toLocaleLowerCase()); 
+        if(!personToUpdate) throw new Error('person not found');
+
+        personService.update(personToUpdate.id, {...personToUpdate, number: phoneNumber})
+          .then(returnedNote => {
+              setPersons(persons.map(person => personToUpdate.id !== person.id ? person : returnedNote)) 
+          });
+      }
+    }
     else{
-      setPersons(persons.concat(newPerson));
-      setNewName('')
-      setPhoneNumber('')
+      personService.create(newPerson)
+        .then(returnedPerson =>{
+          setPersons(persons.concat(returnedPerson));
+          setNewName('')
+          setPhoneNumber('')
+        })
+    }
+  }
+
+  const deletePerson = (id) =>{
+    const person = persons.filter(p => p.id === id)[0];
+    if (window.confirm(`Delete ${person.name}?`)) {
+      
+      personService.deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id));
+        });
     }
   }
 
@@ -86,7 +110,7 @@ const App = () => {
         />
 
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} handleDelete={deletePerson} />
     </div>
   )
 }
