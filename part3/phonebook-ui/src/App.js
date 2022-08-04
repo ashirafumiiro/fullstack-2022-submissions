@@ -52,6 +52,7 @@ const App = () => {
               setPhoneNumber('') 
           })
           .catch(err =>{
+            
             const msg = `Information of ${personToUpdate.name} has already been removed from server`;
             showNotification(msg);
             setPersons(persons.filter(p => p.id !== personToUpdate.id));
@@ -65,7 +66,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName('')
           setPhoneNumber('')
-        })
+        }).catch(error => {
+          showNotification(error.response.data.error)
+          console.log(error.response.data.error)
+        });
     }
   }
 
