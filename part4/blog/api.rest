@@ -5,8 +5,19 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
 
 {
-    "title": "The Programmer lifestyle",
+    "title": "The Programmer lifestyle 2",
     "author": "Miiro Ashirafu",
     "url": "http://myblog.com/programmer-lifestyle",
     "likes": 10
+}
+
+###
+DELETE http://localhost:3003/api/blogs/62efb5fce3e2566122b2af2e HTTP/1.1
+
+###
+PUT http://localhost:3003/api/blogs/62efb5fce3e2566122b2af2c HTTP/1.1
+Content-Type: application/json
+
+{
+    "likes": 4
 }
