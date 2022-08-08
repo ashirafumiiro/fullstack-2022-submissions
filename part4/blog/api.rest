@@ -3,16 +3,19 @@ GET http://localhost:3003/api/blogs HTTP/1.1
 ###
 POST http://localhost:3003/api/blogs HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNjJmMDlkNGFhNzQ5YmFjZDQxYWJjNTQ3IiwiaWF0IjoxNjU5OTUyMTc2LCJleHAiOjE2NTk5NTU3NzZ9.AR4T_kcUsMgQrCuPLoxtirMN8gjexsDCS2Q_nFXHrF8
 
 {
-    "title": "The Programmer lifestyle 2",
+    "title": "The Programmer lifestyle 7",
     "author": "Miiro Ashirafu",
     "url": "http://myblog.com/programmer-lifestyle",
     "likes": 10
 }
 
 ###
-DELETE http://localhost:3003/api/blogs/62efb5fce3e2566122b2af2e HTTP/1.1
+DELETE http://localhost:3003/api/blogs/62f0dc95ee1b2b660bee187b HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlbGxhcyIsImlkIjoiNjJmMDlkNGFhNzQ5YmFjZDQxYWJjNTQ3IiwiaWF0IjoxNjU5OTUyMTc2LCJleHAiOjE2NTk5NTU3NzZ9.AR4T_kcUsMgQrCuPLoxtirMN8gjexsDCS2Q_nFXHrF8
+
 
 ###
 PUT http://localhost:3003/api/blogs/62efb5fce3e2566122b2af2c HTTP/1.1
@@ -20,4 +23,30 @@ Content-Type: application/json
 
 {
     "likes": 4
+}
+
+
+
+###
+#Users
+GET http://localhost:3003/api/users HTTP/1.1
+###
+POST http://localhost:3003/api/users HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "hellas2",
+    "name": "Arto Hellas II",
+    "password": "salainen"
+}
+
+
+# Logging in
+###
+POST http://localhost:3003/api/login HTTP/1.1
+Content-Type: application/json
+
+{
+       "username": "hellas",
+      "password": "salainen"
 }
