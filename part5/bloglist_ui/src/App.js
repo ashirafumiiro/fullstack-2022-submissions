@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification';
+import Togglable from './components/Togglable'
 
 
 const App = () => {
@@ -11,15 +12,13 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
-  const [author, setAuthor] = useState('')
   const [notificationMessage, setNotificationMessage] = useState(null);
+  const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs =>{
       setBlogs(blogs)
-    )
+    })
   }, [])
 
   useEffect(() => {
@@ -59,27 +58,55 @@ const App = () => {
     }
   }
 
-  const handleAddBlog = async (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: title,
-      author: author,
-      url: url,
-    }
+  const handleAddBlog = (blogObject) => {
 
     blogService.create(blogObject)
       .then(returnedBlog => {
         showNotification(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
         setBlogs(blogs.concat(returnedBlog));
-        setTitle('');
-        setAuthor('');
-        setUrl('');
+        blogFormRef.current.toggleVisibility()
       }).catch(error => {
         showNotification(error.response.data.error)
-        console.log(error.response)
+        console.log(error.response)        
       });
 
   }
+
+  const addLike = id => {
+    const blog = blogs.find(b => b.id === id)
+    const likes = blog.likes || 0;
+  
+    const changedBlog = { ...blog, likes: likes + 1, user: blog.user.id }
+    delete changedBlog.id;
+  
+    blogService
+      .update(id, changedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
+      })
+      .catch(error => {
+        console.log(error);
+        showNotification(
+          `Blog '${blog.content}' was already removed from server`
+        )
+        setBlogs(blogs.filter(n => n.id !== id))
+      })
+  }
+
+  const deletBlog = id => {
+      const blog = blogs.filter(p => p.id === id)[0];
+      console.log('Deleting for blog:', blog)
+      if (window.confirm(`Remove ${blog.title} by ${blog.author}!`)) {
+        
+        blogService.deleteBlog(id)
+          .then(() => {
+            showNotification(`deleted '${blog.title}'`);
+            setBlogs(blogs.filter(blog => blog.id !== id));
+          });
+    }
+  }
+
+
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -107,19 +134,22 @@ const App = () => {
     </form>
   )
 
+  const sortedBlogs = [...blogs].sort((a,b) => b.likes - a.likes)
   const blogsUI = () => (
     <div>
       <h2>blogs</h2>
       <Notification message={notificationMessage} />
       <p>{user.name} logged in <button onClick={() => { setUser(null); window.localStorage.clear() }}>log out</button></p>
       <h2>create new</h2>
-      <BlogForm handleSubmit={handleAddBlog}
-        newTitle={title} titleChange={({ target }) => setTitle(target.value)}
-        author={author} authorChange={({ target }) => setAuthor(target.value)}
-        url={url} urlChange={({ target }) => setUrl(target.value)}
-      />
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      <Togglable buttonLabel="new blog" ref={blogFormRef}>
+        <BlogForm createBlog={handleAddBlog}
+        />
+      </Togglable>
+      
+      {sortedBlogs.map(blog =>
+        <Blog key={blog.id} blog={blog} addLike={() => addLike(blog.id)} 
+          deletable={user.username && user.username === blog.user.username}
+          handleDelete={() => deletBlog(blog.id)}/>
       )}
     </div>
   );
