@@ -3,7 +3,7 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import Notification from './components/Notification';
+import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
 
@@ -11,12 +11,12 @@ const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null);
-  const [notificationMessage, setNotificationMessage] = useState(null);
+  const [user, setUser] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>{
+    blogService.getAll().then(blogs => {
       setBlogs(blogs)
     })
   }, [])
@@ -30,11 +30,11 @@ const App = () => {
     }
   }, [])
 
-  const showNotification = (message) =>{
+  const showNotification = (message) => {
     setNotificationMessage( message )
     setTimeout(() => {
       setNotificationMessage(null)
-    }, 3000);
+    }, 3000)
   }
 
   const handleLogin = async (event) => {
@@ -63,29 +63,29 @@ const App = () => {
     blogService.create(blogObject)
       .then(returnedBlog => {
         showNotification(`a new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
-        setBlogs(blogs.concat(returnedBlog));
+        setBlogs(blogs.concat(returnedBlog))
         blogFormRef.current.toggleVisibility()
       }).catch(error => {
         showNotification(error.response.data.error)
-        console.log(error.response)        
-      });
+        console.log(error.response)
+      })
 
   }
 
   const addLike = id => {
     const blog = blogs.find(b => b.id === id)
-    const likes = blog.likes || 0;
-  
+    const likes = blog.likes || 0
+
     const changedBlog = { ...blog, likes: likes + 1, user: blog.user.id }
-    delete changedBlog.id;
-  
+    delete changedBlog.id
+
     blogService
       .update(id, changedBlog)
       .then(returnedBlog => {
         setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))
       })
       .catch(error => {
-        console.log(error);
+        console.log(error)
         showNotification(
           `Blog '${blog.content}' was already removed from server`
         )
@@ -94,15 +94,15 @@ const App = () => {
   }
 
   const deletBlog = id => {
-      const blog = blogs.filter(p => p.id === id)[0];
-      console.log('Deleting for blog:', blog)
-      if (window.confirm(`Remove ${blog.title} by ${blog.author}!`)) {
-        
-        blogService.deleteBlog(id)
-          .then(() => {
-            showNotification(`deleted '${blog.title}'`);
-            setBlogs(blogs.filter(blog => blog.id !== id));
-          });
+    const blog = blogs.filter(p => p.id === id)[0]
+    console.log('Deleting for blog:', blog)
+    if (window.confirm(`Remove ${blog.title} by ${blog.author}!`)) {
+
+      blogService.deleteBlog(id)
+        .then(() => {
+          showNotification(`deleted '${blog.title}'`)
+          setBlogs(blogs.filter(blog => blog.id !== id))
+        })
     }
   }
 
@@ -145,18 +145,18 @@ const App = () => {
         <BlogForm createBlog={handleAddBlog}
         />
       </Togglable>
-      
+
       {sortedBlogs.map(blog =>
-        <Blog key={blog.id} blog={blog} addLike={() => addLike(blog.id)} 
+        <Blog key={blog.id} blog={blog} addLike={() => addLike(blog.id)}
           deletable={user.username && user.username === blog.user.username}
           handleDelete={() => deletBlog(blog.id)}/>
       )}
     </div>
-  );
+  )
 
   return (
     <div>
-      {user == null ? loginForm() : blogsUI()}
+      {user === null ? loginForm() : blogsUI()}
     </div>
   )
 }
