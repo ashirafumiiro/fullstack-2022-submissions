@@ -15,15 +15,15 @@ const Blog = ({ blog, addLike, deletable, handleDelete }) => {
     marginBottom: 5
   }
   return (
-    <div style={blogStyle}>
-      <div>
+    <div style={blogStyle} className='blog'>
+      <div className='title-name'>
         {blog.title} {blog.author} <button onClick={toggleVisibility}>{detailsVisible ? 'hide' : 'show'}</button>
       </div>
       <div style={showWhenVisible} className="other-details">
         <div>{blog.url}</div>
-        <div>likes {blog.likes || 0} <button onClick={addLike}>like</button></div>
+        <div>likes {blog.likes || 0} <button onClick={addLike} className='like-button'>like</button></div>
         <div>{blog.user.name}</div>
-        {deletable === true &&  <div><button onClick={handleDelete}>delete</button></div>}
+        {deletable === true &&  <div><button onClick={handleDelete} className='delete-button'>delete</button></div>}
       </div>
     </div>
   )

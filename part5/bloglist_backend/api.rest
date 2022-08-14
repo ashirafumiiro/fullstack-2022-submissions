@@ -50,3 +50,6 @@ Content-Type: application/json
        "username": "hellas",
       "password": "salainen"
 }
+
+###
+POST http://localhost:3003/api/testing/reset HTTP/1.1
