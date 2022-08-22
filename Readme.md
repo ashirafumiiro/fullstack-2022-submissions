@@ -5,4 +5,4 @@ course url: https://fullstackopen.com
 Certificate url: https://studies.cs.helsinki.fi/stats/api/certificate/fullstackopen/en/35d4acc9ce158871f51e65947c585eb1
 
 Certificate
-![alt text](images/certificate-fullstack.png "Certificate")
+![Certificate Image](https://studies.cs.helsinki.fi/stats/api/certificate/fullstackopen/en/35d4acc9ce158871f51e65947c585eb1 "Certificate")

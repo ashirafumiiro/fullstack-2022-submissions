@@ -32,7 +32,6 @@ const AnecdoteList = ({showNotification}) => {
       showNotification(`you voted '${anecdote.content}`)
     }
     const sortedAecdotes = [...anecdotes].sort((a,b) => b.votes - a.votes)
-    
     return(
         <div>
             

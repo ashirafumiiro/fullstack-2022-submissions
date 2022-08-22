@@ -4,6 +4,9 @@ import Notification from './components/Notification'
 import {clearMessage, setMesssage} from './reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import Filter from './components/Filter'
+import { useEffect } from 'react'
+import anecdoteService from './services/anecdotes'
+import {setAnecdotes} from './reducers/anecdoteReducer'
 
 
 
@@ -13,6 +16,12 @@ const App = () => {
     dispatch(setMesssage(message))
     setTimeout(()=>dispatch(clearMessage()), 5000)
   }
+
+  useEffect(() =>{
+    anecdoteService.getAll().then(anecdotes => {
+      dispatch(setAnecdotes(anecdotes))
+    })
+  }, [dispatch])
 
   return (
     <div>
