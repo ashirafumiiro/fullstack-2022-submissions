@@ -26,10 +26,9 @@ const AnecdoteList = ({showNotification}) => {
     
   
     const vote = (id) => {
-      dispatch(addVote(id))
       const anecdote = anecdotes.find(a => a.id === id)
-      console.log('voting')
-      showNotification(`you voted '${anecdote.content}`)
+      dispatch(addVote(anecdote))
+      showNotification(`you voted '${anecdote.content}'`)
     }
     const sortedAecdotes = [...anecdotes].sort((a,b) => b.votes - a.votes)
     return(
